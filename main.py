@@ -1,7 +1,8 @@
 from pico2d import open_canvas, delay, close_canvas
 
 import game_framework
-import logo_screen as start_mode
+# import logo_screen as start_mode
+import menu_screen as start_mode
 # import title_mode as start_mode
 # import play_mode as start_mode
 

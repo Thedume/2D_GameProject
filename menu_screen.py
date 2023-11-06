@@ -9,13 +9,14 @@ import Hurdle_screen
 def init():
     # global background
     global toHammer
-    #toSpear, toRunning
+    global toJavelin
+    global toHurdle
 
     running = True
     # background = load_image('./resources/tuk_credit.png')
     toHammer = load_image('./resources/throwHammerIcon.png')
-    # toSpear = load_image('')
-    # toRunning = load_image('')
+    toJavelin = load_image('./resources/javelinThrowIcon.png')
+    toHurdle = load_image('./resources/hurdleIcon.png')
 
 
 def finish():
@@ -29,12 +30,12 @@ def update():
 def draw():
     clear_canvas()
     # background.draw(400, 300)
-    # 400, 150
-    # toRunning.draw(400, 150)
-    # 200, 450
+    # 400, 450
+    toHurdle.draw(400, 450)
+    # 200, 150
     toHammer.draw(200, 150)
-    # 600, 450
-    # toSpeer.draw(600, 450)
+    # 600, 150
+    toJavelin.draw(600, 150)
     update_canvas()
     pass
 
@@ -48,7 +49,13 @@ def handle_events():
         elif event.type == SDL_MOUSEBUTTONDOWN:
             if pow(75, 2) > (pow(200 - event.x, 2) + pow(450 - event.y, 2)):
                 print("In toHammer Circle")
-                game_framework.push_mode(hammer_screen)
+                game_framework.push_mode(HammerThrow_screen)
+            if pow(75, 2) > (pow(600 - event.x, 2) + pow(450 - event.y, 2)):
+                print("In toJavelin Circle")
+                game_framework.push_mode(JavelinThrow_screen)
+            if pow(75, 2) > (pow(400 - event.x, 2) + pow(150 - event.y, 2)):
+                print("In toHurdle Circle")
+                game_framework.push_mode(Hurdle_screen)
 
 
 def pause():

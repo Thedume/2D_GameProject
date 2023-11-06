@@ -1,9 +1,9 @@
 from pico2d import *
 import game_framework
 import title_screen
-import hammer_screen
-import speer_screen
-import running_screen
+import HammerThrow_screen
+import JavelinThrow_screen
+import Hurdle_screen
 
 
 def init():

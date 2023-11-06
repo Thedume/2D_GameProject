@@ -1,15 +1,19 @@
 from pico2d import *
 import game_framework
 import menu_screen
+from player import Player
 
 
 def init():
     global image
     global text
+    global player
 
     running = True
     # image = load_image('./resources/title.png')
     text = load_font("./resources/ENCR10B.TTF", 16)
+
+    player = Player()
 
 
 def finish():
@@ -17,6 +21,7 @@ def finish():
 
 
 def update():
+    player.update()
     pass
 
 
@@ -24,6 +29,7 @@ def draw():
     clear_canvas()
     # image.draw(400, 300)
     text.draw(400, 300, "Hurdle Screen", (255, 255, 0))
+    player.draw()
     update_canvas()
     pass
 

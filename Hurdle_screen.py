@@ -2,7 +2,7 @@ from pico2d import *
 import game_framework
 import game_world
 import menu_screen
-from player import Player
+from player import Player, Hurdle
 from grass import Grass
 
 
@@ -19,9 +19,8 @@ def init():
     grass = Grass()
     game_world.add_object(grass, 0)
 
-    player = Player()
+    player = Player(1)
     game_world.add_object(player, 1)
-
 
 def finish():
     pass

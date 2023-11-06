@@ -1,5 +1,6 @@
 from pico2d import *
 import game_framework
+import game_world
 import menu_screen
 from player import Player
 from grass import Grass
@@ -15,8 +16,11 @@ def init():
     # image = load_image('./resources/title.png')
     text = load_font("./resources/ENCR10B.TTF", 16)
 
-    player = Player()
     grass = Grass()
+    game_world.add_object(grass, 0)
+
+    player = Player()
+    game_world.add_object(player, 1)
 
 
 def finish():
@@ -24,19 +28,16 @@ def finish():
 
 
 def update():
-    player.update()
-    grass.update()
+    game_world.update()
     pass
 
 
 def draw():
     clear_canvas()
-    # image.draw(400, 300)
-    text.draw(400, 300, "Hurdle Screen", (255, 255, 0))
-    player.draw()
-    grass.draw()
+    game_world.render()
+    # 스크린 위치 확인용
+    # text.draw(400, 300, "Hurdle Screen", (255, 255, 0))
     update_canvas()
-    pass
 
 
 def handle_events():

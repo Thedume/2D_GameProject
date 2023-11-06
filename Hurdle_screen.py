@@ -2,18 +2,21 @@ from pico2d import *
 import game_framework
 import menu_screen
 from player import Player
+from grass import Grass
 
 
 def init():
     global image
     global text
     global player
+    global grass
 
     running = True
     # image = load_image('./resources/title.png')
     text = load_font("./resources/ENCR10B.TTF", 16)
 
     player = Player()
+    grass = Grass()
 
 
 def finish():
@@ -22,6 +25,7 @@ def finish():
 
 def update():
     player.update()
+    grass.update()
     pass
 
 
@@ -30,6 +34,7 @@ def draw():
     # image.draw(400, 300)
     text.draw(400, 300, "Hurdle Screen", (255, 255, 0))
     player.draw()
+    grass.draw()
     update_canvas()
     pass
 

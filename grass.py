@@ -3,7 +3,7 @@ from pico2d import *
 
 class Grass:
     def __init__(self):
-        self.image = load_image('./resources/grass.png')
+        self.image = load_image('./resources/Hurdle/grass.png')
 
     def update(self):
         pass

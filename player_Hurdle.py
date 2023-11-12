@@ -152,7 +152,7 @@ class HurdlePlayer:
         self.x, self.y = 50, 90
         self.frame = 0
         self.action = 3
-        self.image = load_image("./resources/animation_sheet.png")
+        self.image = load_image("./resources/Hurdle/animation_sheet.png")
         self.font = load_font("./resources/ENCR10B.TTF", 16)
         self.frame_time = 0.0
         self.dir_y = 0

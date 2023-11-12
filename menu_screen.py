@@ -7,16 +7,19 @@ import screen_Hurdle
 
 
 def init():
-    # global background
+    global background
     global toHammer
     global toJavelin
     global toHurdle
+    global circle
 
     running = True
-    # background = load_image('./resources/tuk_credit.png')
-    toHammer = load_image('./resources/throwHammerIcon.png')
-    toJavelin = load_image('./resources/javelinThrowIcon.png')
-    toHurdle = load_image('./resources/hurdleIcon.png')
+    background = load_image('./resources/menuBackground.png')
+    toHammer = load_image('./resources/Hammer/throwHammerIcon.png')
+    toJavelin = load_image('./resources/Javelin/javelinThrowIcon.png')
+    toHurdle = load_image('./resources/Hurdle/hurdleIcon.png')
+
+    circle = load_image('./resources/Circle.png')
 
 
 def finish():
@@ -29,7 +32,7 @@ def update():
 
 def draw():
     clear_canvas()
-    # background.draw(400, 300)
+    background.draw(400, 300)
     # 400, 450
     toHurdle.draw(400, 450)
     # 200, 150
@@ -49,13 +52,20 @@ def handle_events():
         elif event.type == SDL_MOUSEBUTTONDOWN:
             if pow(75, 2) > (pow(200 - event.x, 2) + pow(450 - event.y, 2)):
                 print("In toHammer Circle")
-                game_framework.push_mode(HammerThrow_screen)
+                game_framework.push_mode(screen_HammerThrow)
             if pow(75, 2) > (pow(600 - event.x, 2) + pow(450 - event.y, 2)):
                 print("In toJavelin Circle")
-                game_framework.push_mode(JavelinThrow_screen)
+                game_framework.push_mode(screen_JavelinThrow)
             if pow(75, 2) > (pow(400 - event.x, 2) + pow(150 - event.y, 2)):
                 print("In toHurdle Circle")
-                game_framework.push_mode(Hurdle_screen)
+                game_framework.push_mode(screen_Hurdle)
+        elif event.type == SDL_MOUSEMOTION:
+            if pow(75, 2) > (pow(200 - event.x, 2) + pow(450 - event.y, 2)):
+                circle.draw(200, 450)
+            if pow(75, 2) > (pow(600 - event.x, 2) + pow(450 - event.y, 2)):
+                circle.draw(600, 450)
+            if pow(75, 2) > (pow(400 - event.x, 2) + pow(150 - event.y, 2)):
+                circle.draw(400, 150)
 
 
 def pause():

@@ -5,9 +5,13 @@ import menu_screen
 
 def init():
     global image
+    global titleText
+    global text
 
     running = True
-    image = load_image('./resources/title.png')
+    image = load_image('./resources/menuBackground.png')
+    titleText = load_font("./resources/Giants-Inline.TTF", 70)
+    text = load_font("./resources/Giants-Regular.TTF", 40)
 
 
 def finish():
@@ -21,6 +25,8 @@ def update():
 def draw():
     clear_canvas()
     image.draw(400, 300)
+    titleText.draw(200, 400, "육상 3종 경기", (0, 0, 0))
+    text.draw(190, 110, "Press Space to Start!", (0, 0, 0))
     update_canvas()
     pass
 

@@ -2,8 +2,10 @@ from pico2d import *
 import game_framework
 import game_world
 import Screen.menu_screen
+
 from Class.player_Hurdle import HurdlePlayer
 from Class.grass import Grass
+from Class.hurdle import Hurdle
 
 
 def init():
@@ -11,6 +13,7 @@ def init():
     global text
     global player
     global grass
+    global hurdle
 
     running = True
     # image = load_image('./resources/title.png')
@@ -22,12 +25,18 @@ def init():
     player = HurdlePlayer()
     game_world.add_object(player, 1)
 
+    hurdle = Hurdle()
+    game_world.add_object(hurdle, 1)
+
 def finish():
+    game_world.clear()
     pass
 
 
 def update():
     game_world.update()
+
+    # game_world.handle_collisions()
     pass
 
 

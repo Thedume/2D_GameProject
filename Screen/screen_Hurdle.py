@@ -9,13 +9,10 @@ from Class.hurdle import Hurdle
 
 def init():
     global image
-    global text
     global player
     global hurdle
 
-    running = True
     image = load_image('./resources/Hurdle/hurdle_Background.png')
-    text = load_font("./resources/ENCR10B.TTF", 16)
 
     player = HurdlePlayer()
     game_world.add_object(player, 1)
@@ -44,16 +41,18 @@ def draw():
     image.draw(400, 300)
     game_world.render()
     # 스크린 위치 확인용
-    # text.draw(400, 300, "Hurdle Screen", (255, 255, 0))
     update_canvas()
 
 
 def handle_events():
+    global isShowText
     for event in get_events():
         if event.type == SDL_QUIT:
             game_framework.quit()
         elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_ESCAPE):
             game_framework.pop_mode()
+        else:
+            player.handle_event(event)
 
 
 def pause():

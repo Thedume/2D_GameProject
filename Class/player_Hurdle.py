@@ -16,7 +16,6 @@ FRAMES_PER_ACTION = 8
 
 
 def space_down(e):
-    print("space down")
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_SPACE
 
 
@@ -27,7 +26,6 @@ def s_down(e):
 class Idle:
     @staticmethod
     def enter(hurdlePlayer, e):
-        print("Enter Idle")
         hurdlePlayer.dir = 0
         hurdlePlayer.frame = 0
         pass
@@ -48,7 +46,6 @@ class Idle:
 class Run:
     @staticmethod
     def enter(hurdlePlayer, e):
-        print("enter Hurdle State")
         hurdlePlayer.action = 1
 
     @staticmethod
@@ -128,6 +125,7 @@ class StateMachine:
         self.transitions = {
             Idle: {s_down: Run},
             Run: {space_down: Jump, s_down: Idle},
+            Jump: {}
         }
 
     def start(self):
@@ -137,7 +135,6 @@ class StateMachine:
         self.cur_state.do(self.hurdlePlayer)
 
     def handle_event(self, e):
-        print("Handle_event")
         for check_event, next_state in self.transitions[self.cur_state].items():
             if check_event(e):
                 self.cur_state.exit(self.hurdlePlayer, e)
@@ -158,6 +155,8 @@ class HurdlePlayer:
         self.action = 3
         self.image = load_image("./resources/Hurdle/animation_sheet.png")
         self.font = load_font("./resources/ENCR10B.TTF", 16)
+        self.explain = load_font("./resources/Giants-Regular.TTF", 52)
+        self.isShowExplain = True
         self.frame_time = 0.0
         self.dir_y = 0
         self.state_machine = StateMachine(self)
@@ -174,12 +173,16 @@ class HurdlePlayer:
         self.state_machine.update()
 
     def handle_event(self, event):
+        if (event.type, event.key) == (SDL_KEYDOWN, SDLK_s):
+            self.isShowExplain = False
         self.state_machine.handle_event(('INPUT', event))
 
     def draw(self):
         self.state_machine.draw()
         # self.font.draw(self.x-10, self.y + 50, f'{self.ball_count:02d}', (255, 255, 0))
         # draw_rectangle(*self.get_bb())
+        if self.isShowExplain:
+            self.explain.draw(160, 500, "Press 'S' to Start!", (0, 0, 0))
 
     def get_bb(self):
         return self.x - 20, self.y - 50, self.x + 20, self.y + 50

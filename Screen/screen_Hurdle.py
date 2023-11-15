@@ -4,7 +4,6 @@ import game_world
 import Screen.menu_screen
 
 from Class.player_Hurdle import HurdlePlayer
-from Class.grass import Grass
 from Class.hurdle import Hurdle
 
 
@@ -12,21 +11,21 @@ def init():
     global image
     global text
     global player
-    global grass
     global hurdle
 
     running = True
-    # image = load_image('./resources/title.png')
+    image = load_image('./resources/Hurdle/hurdle_Background.png')
     text = load_font("./resources/ENCR10B.TTF", 16)
-
-    grass = Grass()
-    game_world.add_object(grass, 0)
 
     player = HurdlePlayer()
     game_world.add_object(player, 1)
 
-    hurdle = [Hurdle() for _ in range(10)]
-    game_world.add_objects(hurdle, 1)
+    hurdle = Hurdle()
+    game_world.add_object(hurdle, 1)
+
+    game_world.add_collision_pair('player:hurdle', player, None)
+    game_world.add_collision_pair('player:hurdle', None, hurdle)
+
 
 def finish():
     game_world.clear()
@@ -36,12 +35,13 @@ def finish():
 def update():
     game_world.update()
 
-    # game_world.handle_collisions()
+    game_world.handle_collisions()
     pass
 
 
 def draw():
     clear_canvas()
+    image.draw(400, 300)
     game_world.render()
     # 스크린 위치 확인용
     # text.draw(400, 300, "Hurdle Screen", (255, 255, 0))

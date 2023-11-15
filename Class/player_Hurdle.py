@@ -121,6 +121,7 @@ class Jump:
 
 class StateMachine:
     def __init__(self, hurdlePlayer):
+        print("StateMachine __init__")
         self.hurdlePlayer = hurdlePlayer
         self.cur_state = Idle
 
@@ -152,7 +153,7 @@ class StateMachine:
 
 class HurdlePlayer:
     def __init__(self):
-        self.x, self.y = 50, 90
+        self.x, self.y = 120, 150
         self.frame = 0
         self.action = 3
         self.image = load_image("./resources/Hurdle/animation_sheet.png")
@@ -184,4 +185,5 @@ class HurdlePlayer:
         return self.x - 20, self.y - 50, self.x + 20, self.y + 50
 
     def handle_collision(self, group, other):
-        pass
+        if group == 'boy:hurdle':
+            pass

@@ -27,10 +27,10 @@ class Hurdle:
             Hurdle.images = load_image("./Resources/Hurdle/hurdle.png")
 
     def __init__(self):
-        self.x, self.y = 700, 90
+        self.x, self.y = 700, 150
         self.load_images()
         self.dir = -1
-        self.isDown = True
+        self.isDown = False
         self.w, self.h = 75, 75
 
     def update(self):
@@ -44,14 +44,15 @@ class Hurdle:
         if not self.isDown:
             Hurdle.images.draw(self.x, self.y, self.w, self.h)
         elif self.isDown:
-            Hurdle.images.composite_draw(-3.141592 / 1.5, '', self.x, self.y - 15, self.w, self.h)
+            Hurdle.images.composite_draw(-3.141592 / 1.5, '', self.x, self.y - 20, self.w - 10, self.h - 10)
+        # draw_rectangle(*self.get_bb())
 
     def handle_event(self, event):
         pass
 
     def get_bb(self):
-        return self.x - (self.w / 2), self.y - (self.h / 2), self.x + (self.w / 2), self.y + (self.h / 2)
+        return self.x - (self.w / 2), self.y - (self.h / 2), self.x + (self.w / 2) - 65, self.y + (self.h / 2)
 
     def handle_collision(self, group, other):
-        pass
-
+        if group == 'player:hurdle':
+            self.isDown = True

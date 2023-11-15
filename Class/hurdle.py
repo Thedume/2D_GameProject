@@ -6,19 +6,17 @@ from pico2d import *
 
 import game_world
 
-# zombie Run Speed
+# hurdle Run Speed
 PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
 RUN_SPEED_KMPH = 10.0  # Km / Hour
 RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
 RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
 
-# zombie Action Speed
+# hurdle Action Speed
 TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 10.0
-
-animation_names = ['Walk']
 
 class Hurdle:
     images = None
@@ -29,11 +27,11 @@ class Hurdle:
             Hurdle.images = load_image("./Resources/Hurdle/hurdle.png")
 
     def __init__(self):
-        self.x, self.y = 700, 100
+        self.x, self.y = 700, 90
         self.load_images()
         self.dir = -1
-        self.isDown = False
-        self.w, self.h = 100, 100
+        self.isDown = True
+        self.w, self.h = 75, 75
 
     def update(self):
         self.x += RUN_SPEED_PPS * self.dir * game_framework.frame_time
@@ -45,6 +43,8 @@ class Hurdle:
     def draw(self):
         if not self.isDown:
             Hurdle.images.draw(self.x, self.y, self.w, self.h)
+        elif self.isDown:
+            Hurdle.images.composite_draw(-3.141592 / 1.5, '', self.x, self.y - 15, self.w, self.h)
 
     def handle_event(self, event):
         pass

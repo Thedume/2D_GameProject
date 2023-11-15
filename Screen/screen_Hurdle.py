@@ -25,8 +25,8 @@ def init():
     player = HurdlePlayer()
     game_world.add_object(player, 1)
 
-    hurdle = Hurdle()
-    game_world.add_object(hurdle, 1)
+    hurdle = [Hurdle() for _ in range(10)]
+    game_world.add_objects(hurdle, 1)
 
 def finish():
     game_world.clear()

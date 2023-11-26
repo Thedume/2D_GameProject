@@ -53,6 +53,7 @@ class Idle:
 class Rotate:
     @staticmethod
     def enter(hammerPlayer, e):
+        print('inter Rotate')
         pass
 
     @staticmethod
@@ -71,9 +72,7 @@ class Rotate:
 class Power:
     @staticmethod
     def enter(hammerPlayer, e):
-        hammerPlayer.dir = 0
-        hammerPlayer.frame = 0
-        hammerPlayer.wait_time = get_time()
+        print('inter Power')
         pass
 
     @staticmethod
@@ -92,9 +91,7 @@ class Power:
 class Stop:
     @staticmethod
     def enter(hammerPlayer, e):
-        hammerPlayer.dir = 0
-        hammerPlayer.frame = 0
-        hammerPlayer.wait_time = get_time()
+        print('inter Stop')
         pass
 
     @staticmethod
@@ -117,7 +114,9 @@ class StateMachine:
         self.cur_state = Idle
 
         self.transitions = {
-            Idle: {}
+            Idle: {space_down: Rotate},
+            Rotate: {space_down: Power},
+            Power: {space_down: Stop}
         }
 
     def start(self):
@@ -147,27 +146,32 @@ class HammerPlayer:
         if HammerPlayer.images == None:
             HammerPlayer.images = {}
             for name in animation_names:
-                HammerPlayer.images[name] = [load_image("./Player/" + " (%d)" % i + ".png") for i in range(1, 10)]
-            HammerPlayer.font = load_font('ENCR10B.TTF', 40)
-            HammerPlayer.marker_image = load_image('hand_arrow.png')
+                HammerPlayer.images[name] = [load_image("./resources/hammer/player/" + "%d" % i + ".png") for i in range(1, 10)]
+            HammerPlayer.font = load_font('./resources/ENCR10B.TTF', 40)
+            # HammerPlayer.marker_image = load_image('hand_arrow.png')
 
     def __init__(self):
         self.x, self.y = 120, 150
         self.frame = 0
         self.load_images()
         self.frame_time = 0.0
+        self.state = 'Walk'
         self.state_machine = StateMachine(self)
         self.state_machine.start()
 
     def update(self):
-        self.state_machine.update()
+        # self.state_machine.update()
+        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
 
     def handle_event(self, event):
-        self.state_machine.handle_event(('INPUT', event))
+        # self.state_machine.handle_event(('INPUT', event))
+        pass
 
     def draw(self):
-        self.state_machine.draw()
+        # self.state_machine.draw()
         # draw_rectangle(*self.get_bb())
+        HammerPlayer.images[self.state][int(self.frame)].draw(self.x, self.y, 100, 100)
+
 
     def get_bb(self):
         return self.x - 20, self.y - 50, self.x + 20, self.y + 50

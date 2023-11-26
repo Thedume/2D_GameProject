@@ -14,6 +14,8 @@ TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 8
 
+animation_names = ['Walk', 'Idle']
+
 
 def space_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_SPACE
@@ -45,12 +47,72 @@ class Idle:
 
     @staticmethod
     def draw(hammerPlayer):
-        hammerPlayer.image.clip_draw(int(hammerPlayer.frame) * 100, hammerPlayer.action * 100, 100, 100, hammerPlayer.x,
-                                     hammerPlayer.y)
+        hammerPlayer.image.clip_draw(int(hammerPlayer.frame) * 100, hammerPlayer.action * 100, 100, 100, hammerPlayer.x, hammerPlayer.y)
+
+
+class Rotate:
+    @staticmethod
+    def enter(hammerPlayer, e):
+        pass
+
+    @staticmethod
+    def exit(hammerPlayer, e):
+        pass
+
+    @staticmethod
+    def do(hammerPlayer):
+        hammerPlayer.frame = (hammerPlayer.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
+
+    @staticmethod
+    def draw(hammerPlayer):
+        hammerPlayer.image.clip_draw(int(hammerPlayer.frame) * 100, hammerPlayer.action * 100, 100, 100, hammerPlayer.x, hammerPlayer.y)
+
+
+class Power:
+    @staticmethod
+    def enter(hammerPlayer, e):
+        hammerPlayer.dir = 0
+        hammerPlayer.frame = 0
+        hammerPlayer.wait_time = get_time()
+        pass
+
+    @staticmethod
+    def exit(hammerPlayer, e):
+        pass
+
+    @staticmethod
+    def do(hammerPlayer):
+        hammerPlayer.frame = (hammerPlayer.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
+
+    @staticmethod
+    def draw(hammerPlayer):
+        hammerPlayer.image.clip_draw(int(hammerPlayer.frame) * 100, hammerPlayer.action * 100, 100, 100, hammerPlayer.x, hammerPlayer.y)
+
+
+class Stop:
+    @staticmethod
+    def enter(hammerPlayer, e):
+        hammerPlayer.dir = 0
+        hammerPlayer.frame = 0
+        hammerPlayer.wait_time = get_time()
+        pass
+
+    @staticmethod
+    def exit(hammerPlayer, e):
+        pass
+
+    @staticmethod
+    def do(hammerPlayer):
+        hammerPlayer.frame = (hammerPlayer.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
+
+    @staticmethod
+    def draw(hammerPlayer):
+        hammerPlayer.image.clip_draw(int(hammerPlayer.frame) * 100, hammerPlayer.action * 100, 100, 100, hammerPlayer.x, hammerPlayer.y)
+
 
 class StateMachine:
     def __init__(self, hammerPlayer):
-        print("StateMachine __init__")
+        # print("StateMachine __init__")
         self.hammerPlayer = hammerPlayer
         self.cur_state = Idle
 
@@ -79,46 +141,36 @@ class StateMachine:
 
 
 class HammerPlayer:
+    images = None
+
+    def load_images(self):
+        if HammerPlayer.images == None:
+            HammerPlayer.images = {}
+            for name in animation_names:
+                HammerPlayer.images[name] = [load_image("./Player/" + " (%d)" % i + ".png") for i in range(1, 10)]
+            HammerPlayer.font = load_font('ENCR10B.TTF', 40)
+            HammerPlayer.marker_image = load_image('hand_arrow.png')
+
     def __init__(self):
         self.x, self.y = 120, 150
         self.frame = 0
-        self.action = 3
-        self.image = load_image("./resources/Hurdle/animation_sheet.png")
-        self.font = load_font("./resources/ENCR10B.TTF", 16)
-        self.isShowExplain = True
+        self.load_images()
         self.frame_time = 0.0
-        self.dir_y = 0
         self.state_machine = StateMachine(self)
         self.state_machine.start()
-        self.meter = 0.0
-
-        self.isJump = 0
-        self.v = 7
-        self.m = 2
-
-        self.isDown = False
-
-    def jump(self, j):
-        self.isJump = j
 
     def update(self):
         self.state_machine.update()
-        self.meter = RUN_SPEED_MPS * self.frame_time
 
     def handle_event(self, event):
-        if (event.type, event.key) == (SDL_KEYDOWN, SDLK_s):
-            self.isShowExplain = False
         self.state_machine.handle_event(('INPUT', event))
 
     def draw(self):
         self.state_machine.draw()
-        self.font.draw(self.x - 10, self.y + 50, f'{self.meter:02f}', (255, 255, 0))
         # draw_rectangle(*self.get_bb())
 
     def get_bb(self):
         return self.x - 20, self.y - 50, self.x + 20, self.y + 50
 
     def handle_collision(self, group, other):
-        if group == 'player:hurdle':
-            print("collision Hurdle")
-            self.isDown = True
+        pass

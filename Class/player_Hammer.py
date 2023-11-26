@@ -43,11 +43,12 @@ class Idle:
 
     @staticmethod
     def do(hammerPlayer):
-        hammerPlayer.frame = (hammerPlayer.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
+        # hammerPlayer.frame = (hammerPlayer.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
+        hammerPlayer.frame = (hammerPlayer.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
 
     @staticmethod
     def draw(hammerPlayer):
-        hammerPlayer.image.clip_draw(int(hammerPlayer.frame) * 100, hammerPlayer.action * 100, 100, 100, hammerPlayer.x, hammerPlayer.y)
+        hammerPlayer.images[hammerPlayer.state][int(hammerPlayer.frame)].draw(hammerPlayer.x, hammerPlayer.y, 100, 100)
 
 
 class Rotate:
@@ -160,18 +161,16 @@ class HammerPlayer:
         self.state_machine.start()
 
     def update(self):
-        # self.state_machine.update()
-        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
+        self.state_machine.update()
 
     def handle_event(self, event):
         # self.state_machine.handle_event(('INPUT', event))
         pass
 
     def draw(self):
-        # self.state_machine.draw()
+        self.state_machine.draw()
         # draw_rectangle(*self.get_bb())
-        HammerPlayer.images[self.state][int(self.frame)].draw(self.x, self.y, 100, 100)
-
+        pass
 
     def get_bb(self):
         return self.x - 20, self.y - 50, self.x + 20, self.y + 50

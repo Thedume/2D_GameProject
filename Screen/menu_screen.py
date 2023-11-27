@@ -4,6 +4,7 @@ import Screen.title_screen
 import Screen.screen_HammerThrow
 import Screen.screen_JavelinThrow
 import Screen.screen_Hurdle
+import Screen.hurdleMenu_screen
 
 
 def init():
@@ -52,13 +53,14 @@ def handle_events():
         elif event.type == SDL_MOUSEBUTTONDOWN:
             if pow(75, 2) > (pow(200 - event.x, 2) + pow(450 - event.y, 2)):
                 print("In toHammer Circle")
-                game_framework.push_mode(Screen.screen_HammerThrow)
+                game_framework.change_mode(Screen.screen_HammerThrow)
             if pow(75, 2) > (pow(600 - event.x, 2) + pow(450 - event.y, 2)):
                 print("In toJavelin Circle")
-                game_framework.push_mode(Screen.screen_JavelinThrow)
+                game_framework.change_mode(Screen.screen_JavelinThrow)
             if pow(75, 2) > (pow(400 - event.x, 2) + pow(150 - event.y, 2)):
                 print("In toHurdle Circle")
-                game_framework.push_mode(Screen.screen_Hurdle)
+                game_framework.change_mode(Screen.screen_Hurdle)
+                game_framework.push_mode(Screen.hurdleMenu_screen)
         elif event.type == SDL_MOUSEMOTION:
             if pow(75, 2) > (pow(200 - event.x, 2) + pow(450 - event.y, 2)):
                 circle.draw(200, 450)

@@ -4,17 +4,17 @@ import game_framework
 
 # self Run Speed
 PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
-RUN_SPEED_KMPH = 20.0  # Km / Hour
+RUN_SPEED_KMPH = 10.0  # Km / Hour
 RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
 RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
 
 # self Action Speed
-TIME_PER_ACTION = 0.5
+TIME_PER_ACTION = 0.75
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 8
 
-animation_names = ['Walk', 'Idle']
+animation_names = {'Idle': 6, 'Rotate': 9}
 
 
 def space_down(e):
@@ -32,9 +32,36 @@ def time_out(e):
 class Idle:
     @staticmethod
     def enter(hammerPlayer, e):
+        global FRAMES_PER_ACTION
         hammerPlayer.dir = 0
         hammerPlayer.frame = 0
         hammerPlayer.wait_time = get_time()
+
+        FRAMES_PER_ACTION = animation_names['Idle']
+        pass
+
+    @staticmethod
+    def exit(hammerPlayer, e):
+        pass
+
+    @staticmethod
+    def do(hammerPlayer):
+        # hammerPlayer.frame = (hammerPlayer.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
+        hammerPlayer.frame = (hammerPlayer.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
+
+    @staticmethod
+    def draw(hammerPlayer):
+        hammerPlayer.images[hammerPlayer.state][int(hammerPlayer.frame)].draw(hammerPlayer.x, hammerPlayer.y, 75, 75)
+
+
+class Rotate:
+    @staticmethod
+    def enter(hammerPlayer, e):
+        global FRAMES_PER_ACTION
+        print('Enter Rotate')
+
+        hammerPlayer.state = 'Rotate'
+        FRAMES_PER_ACTION = animation_names['Rotate']
         pass
 
     @staticmethod
@@ -51,29 +78,10 @@ class Idle:
         hammerPlayer.images[hammerPlayer.state][int(hammerPlayer.frame)].draw(hammerPlayer.x, hammerPlayer.y, 100, 100)
 
 
-class Rotate:
-    @staticmethod
-    def enter(hammerPlayer, e):
-        print('inter Rotate')
-        pass
-
-    @staticmethod
-    def exit(hammerPlayer, e):
-        pass
-
-    @staticmethod
-    def do(hammerPlayer):
-        hammerPlayer.frame = (hammerPlayer.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
-
-    @staticmethod
-    def draw(hammerPlayer):
-        hammerPlayer.image.clip_draw(int(hammerPlayer.frame) * 100, hammerPlayer.action * 100, 100, 100, hammerPlayer.x, hammerPlayer.y)
-
-
 class Power:
     @staticmethod
     def enter(hammerPlayer, e):
-        print('inter Power')
+        print('Enter Power')
         pass
 
     @staticmethod
@@ -82,17 +90,18 @@ class Power:
 
     @staticmethod
     def do(hammerPlayer):
-        hammerPlayer.frame = (hammerPlayer.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
+        # hammerPlayer.frame = (hammerPlayer.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
+        hammerPlayer.frame = (hammerPlayer.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
 
     @staticmethod
     def draw(hammerPlayer):
-        hammerPlayer.image.clip_draw(int(hammerPlayer.frame) * 100, hammerPlayer.action * 100, 100, 100, hammerPlayer.x, hammerPlayer.y)
+        hammerPlayer.images[hammerPlayer.state][int(hammerPlayer.frame)].draw(hammerPlayer.x, hammerPlayer.y, 100, 100)
 
 
 class Stop:
     @staticmethod
     def enter(hammerPlayer, e):
-        print('inter Stop')
+        print('Enter Stop')
         pass
 
     @staticmethod
@@ -101,11 +110,12 @@ class Stop:
 
     @staticmethod
     def do(hammerPlayer):
-        hammerPlayer.frame = (hammerPlayer.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
+        # hammerPlayer.frame = (hammerPlayer.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
+        hammerPlayer.frame = ( hammerPlayer.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
 
     @staticmethod
     def draw(hammerPlayer):
-        hammerPlayer.image.clip_draw(int(hammerPlayer.frame) * 100, hammerPlayer.action * 100, 100, 100, hammerPlayer.x, hammerPlayer.y)
+        hammerPlayer.images[hammerPlayer.state][int(hammerPlayer.frame)].draw(hammerPlayer.x, hammerPlayer.y, 100, 100)
 
 
 class StateMachine:
@@ -146,8 +156,8 @@ class HammerPlayer:
     def load_images(self):
         if HammerPlayer.images == None:
             HammerPlayer.images = {}
-            for name in animation_names:
-                HammerPlayer.images[name] = [load_image("./resources/hammer/player/" + "%d" % i + ".png") for i in range(1, 10)]
+            for name in animation_names.keys():
+                HammerPlayer.images[name] = [load_image("./resources/hammer/player/" + name + "(%d)" % i + ".png") for i in range(1, animation_names[name] + 1)]
             HammerPlayer.font = load_font('./resources/ENCR10B.TTF', 40)
             # HammerPlayer.marker_image = load_image('hand_arrow.png')
 
@@ -156,7 +166,7 @@ class HammerPlayer:
         self.frame = 0
         self.load_images()
         self.frame_time = 0.0
-        self.state = 'Walk'
+        self.state = 'Idle'
         self.state_machine = StateMachine(self)
         self.state_machine.start()
 
@@ -164,7 +174,7 @@ class HammerPlayer:
         self.state_machine.update()
 
     def handle_event(self, event):
-        # self.state_machine.handle_event(('INPUT', event))
+        self.state_machine.handle_event(('INPUT', event))
         pass
 
     def draw(self):

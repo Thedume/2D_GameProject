@@ -49,7 +49,7 @@ def handle_events():
         if event.type == SDL_QUIT:
             game_framework.quit()
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
-            game_framework.quit()
+            game_framework.change_mode(Screen.title_screen)
         elif event.type == SDL_MOUSEBUTTONDOWN:
             if pow(75, 2) > (pow(200 - event.x, 2) + pow(450 - event.y, 2)):
                 print("In toHammer Circle")

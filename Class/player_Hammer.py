@@ -1,7 +1,9 @@
 from pico2d import *
 
 import game_world
+import server
 from Class.angle import Angle
+from Class.hammer import Hammer
 from Class.power_bar import Powerbar
 
 import game_framework
@@ -14,7 +16,7 @@ RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
 
 # self Action Speed
-TIME_PER_ACTION = 0.75
+TIME_PER_ACTION = 0.85
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 8
 
@@ -48,6 +50,8 @@ class Idle:
         hammerPlayer.frame_time = 0.0
         hammerPlayer.wait_time = get_time()
 
+        hammerPlayer.info_message = load_font("./resources/Giants-Inline.TTF", 32)
+
         FRAMES_PER_ACTION = animation_names['Idle']
         hammerPlayer.state = 'Idle'
         pass
@@ -63,6 +67,7 @@ class Idle:
     @staticmethod
     def draw(hammerPlayer):
         hammerPlayer.images[hammerPlayer.state][int(hammerPlayer.frame)].draw(hammerPlayer.x, hammerPlayer.y, 30, 30)
+        hammerPlayer.info_message.draw(200, 375, "Press 'Space' to Start", (0, 0, 0))
 
 
 class Rotate:
@@ -124,20 +129,28 @@ class CheckPower:
     @staticmethod
     def enter(hammerPlayer, e):
         print('Enter Power')
-        hammerPlayer.p_dir = 1
+        if not (0 <= hammerPlayer.angle_deg <= 15 or 345 <= hammerPlayer.angle_deg <= 359):
+            print(hammerPlayer.angle_deg)
+            hammerPlayer.state_machine.handle_event(('FOUL', 0))
+        else:
+            hammerPlayer.powerbar = Powerbar(hammerPlayer.x + 100, hammerPlayer.y + 5, 2)
+            game_world.add_object(hammerPlayer.powerbar, 2)
         pass
 
     @staticmethod
     def exit(hammerPlayer, e):
-        game_world.remove_object(hammerPlayer.angle)
-        game_world.remove_object(hammerPlayer.powerbar)
+        if space_down(e):
+            hammerPlayer.angle.isRotate = False
+            hammerPlayer.powerbar_power = hammerPlayer.powerbar.power
+            print(hammerPlayer.powerbar_power)
+        if hammerPlayer.angle:
+            game_world.remove_object(hammerPlayer.angle)
+        if hammerPlayer.powerbar:
+            game_world.remove_object(hammerPlayer.powerbar)
 
     @staticmethod
     def do(hammerPlayer):
         hammerPlayer.frame = (hammerPlayer.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
-        if hammerPlayer.p >= 50 or hammerPlayer.p <= 2:
-            hammerPlayer.p_dir *= -1
-        hammerPlayer.p += hammerPlayer.p_dir * 0.5
 
     @staticmethod
     def draw(hammerPlayer):
@@ -172,6 +185,7 @@ class Foul:
         print('Enter Foul')
         hammerPlayer.state = 'Stop'
         hammerPlayer.frame = 0
+        hammerPlayer.foul_message = load_font("./resources/Giants-Inline.TTF", 32)
         pass
 
     @staticmethod
@@ -185,6 +199,7 @@ class Foul:
     @staticmethod
     def draw(hammerPlayer):
         hammerPlayer.images[hammerPlayer.state][int(hammerPlayer.frame)].draw(hammerPlayer.x, hammerPlayer.y, 55, 55)
+        hammerPlayer.foul_message.draw(200, 300, "FOUL!!" + "\n" + "Press 'Space' to Restart", (255, 255, 0))
 
 
 class StateMachine:
@@ -196,8 +211,8 @@ class StateMachine:
         self.transitions = {
             Idle: {space_down: Rotate},
             Rotate: {space_down: CheckAngle, foul: Foul},
-            CheckAngle: {space_down: CheckPower},
-            CheckPower: {space_down: Stop},
+            CheckAngle: {foul: Foul, space_down: CheckPower},
+            CheckPower: {foul: Foul, space_down: Stop},
             Stop: {},
             Foul: {space_down: Idle}
         }
@@ -238,13 +253,13 @@ class HammerPlayer:
         self.frame = 0
         self.load_images()
         self.frame_time = 0.0
-        self.p = 0
         self.state = 'Idle'
         self.state_machine = StateMachine(self)
         self.state_machine.start()
         self.angle = None
         self.angle_deg = 0
-        self.powerbar = Powerbar(self.x + 70, self.y + 5, self.p)
+        self.powerbar = None
+        self.powerbar_power = 0
 
     def update(self):
         self.state_machine.update()
@@ -258,17 +273,9 @@ class HammerPlayer:
         # draw_rectangle(*self.get_bb())
         pass
 
-    def showAngle(self):
-        global angle
-
-        angle = Angle(self.x + 50, self.y + 5)
-        game_world.add_object(angle)
-
-    def showPowerbar(self):
-        global powerBar
-
-        powerBar = Powerbar(self.x + 40, self.y + 5, self.p)
-        game_world.add_object(powerBar)
+    def throw_hammer(self, x, y,a, p):
+        server.hammer = Hammer(x, y, a, p)
+        game_world.add_object(server.hammer)
 
     def get_bb(self):
         return self.x - 20, self.y - 50, self.x + 20, self.y + 50

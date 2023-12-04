@@ -16,7 +16,7 @@ RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
 
 # self Action Speed
-TIME_PER_ACTION = 0.85
+TIME_PER_ACTION = 6.25
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 8
 
@@ -37,14 +37,17 @@ def foul(e):
     return e[0] == 'FOUL'
 
 
+def end(e):
+    return e[0] == 'END'
+
+
 class Idle:
     @staticmethod
     def enter(jPlayer, e):
         global FRAMES_PER_ACTION
-        jPlayer.x, jPlayer.y = 10, 380  # default : 10, 380
+        jPlayer.x, jPlayer.y = 30, 380  # default : 10, 380
         jPlayer.frame = 0
         jPlayer.dir = 0
-        jPlayer.frame = 0
         jPlayer.frame_time = 0.0
         jPlayer.wait_time = get_time()
 
@@ -59,7 +62,8 @@ class Idle:
 
     @staticmethod
     def do(jPlayer):
-        jPlayer.frame = (jPlayer.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
+        #jPlayer.frame = (jPlayer.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
+        pass
 
     @staticmethod
     def draw(jPlayer):
@@ -80,7 +84,6 @@ class Move:
     @staticmethod
     def exit(jPlayer, e):
         if space_down(e):
-            # jPlayer.showAngle()
             pass
         pass
 
@@ -94,14 +97,14 @@ class Move:
 
     @staticmethod
     def draw(jPlayer):
-        jPlayer.image.clip_draw(int(jPlayer.frame) * 51.5, 0, 51.5, 48, jPlayer.x, jPlayer.y)
+        jPlayer.image.clip_draw(int(jPlayer.frame) * 51, 0, 51, 48, jPlayer.x, jPlayer.y)
 
 
 class CheckAngle:
     @staticmethod
     def enter(jPlayer, e):
         print('Enter Angle')
-        jPlayer.angle = Angle(jPlayer.x + 50, jPlayer.y + 5)
+        jPlayer.angle = Angle(jPlayer.x + 50, jPlayer.y + 5, 'javelin')
         game_world.add_object(jPlayer.angle, 2)
         pass
 
@@ -115,23 +118,21 @@ class CheckAngle:
 
     @staticmethod
     def do(jPlayer):
-        jPlayer.frame = (jPlayer.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
+        # jPlayer.frame = (jPlayer.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
+        pass
 
     @staticmethod
     def draw(jPlayer):
-        jPlayer.image.clip_draw(int(jPlayer.frame) * 51.5, 0, 51.5, 48, jPlayer.x, jPlayer.y)
+        jPlayer.image.clip_draw(int(jPlayer.frame) * 51, 0, 51, 48, jPlayer.x, jPlayer.y)
 
 
 class CheckPower:
     @staticmethod
     def enter(jPlayer, e):
         print('Enter Power')
-        if not (0 <= jPlayer.angle_deg <= 15 or 345 <= jPlayer.angle_deg <= 359):
-            print(jPlayer.angle_deg)
-            jPlayer.state_machine.handle_event(('FOUL', 0))
-        else:
-            jPlayer.powerbar = Powerbar(jPlayer.x + 100, jPlayer.y + 5, 2)
-            game_world.add_object(jPlayer.powerbar, 2)
+
+        jPlayer.powerbar = Powerbar(jPlayer.x + 100, jPlayer.y + 5, 2)
+        game_world.add_object(jPlayer.powerbar, 2)
         pass
 
     @staticmethod
@@ -139,7 +140,7 @@ class CheckPower:
         if space_down(e):
             jPlayer.angle.isRotate = False
             jPlayer.powerbar_power = jPlayer.powerbar.power
-            print(jPlayer.powerbar_power)
+            # print(jPlayer.powerbar_power)
         if jPlayer.angle:
             game_world.remove_object(jPlayer.angle)
         if jPlayer.powerbar:
@@ -147,11 +148,12 @@ class CheckPower:
 
     @staticmethod
     def do(jPlayer):
-        jPlayer.frame = (jPlayer.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
+        # jPlayer.frame = (jPlayer.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
+        pass
 
     @staticmethod
     def draw(jPlayer):
-        jPlayer.image.clip_draw(int(jPlayer.frame) * 51.5, 0, 51.5, 48, jPlayer.x, jPlayer.y)
+        jPlayer.image.clip_draw(int(jPlayer.frame) * 51, 0, 51, 48, jPlayer.x, jPlayer.y)
 
 
 class Stop:
@@ -159,8 +161,9 @@ class Stop:
     def enter(jPlayer, e):
         print('Enter Stop')
         jPlayer.state = 'Stop'
-        jPlayer.frame = 0
-
+        jPlayer.frame = 7
+        server.javelin = Javelin(jPlayer.x, jPlayer.y, jPlayer.angle_deg, jPlayer.powerbar_power)
+        game_world.add_object(server.javelin)
         pass
 
     @staticmethod
@@ -169,11 +172,13 @@ class Stop:
 
     @staticmethod
     def do(jPlayer):
+        if server.javelin.y == 0:
+            jPlayer.state_machine.handle_event(('END', 0))
         pass
 
     @staticmethod
     def draw(jPlayer):
-        jPlayer.images[jPlayer.state][jPlayer.frame].draw(jPlayer.x, jPlayer.y, 55, 55)
+        jPlayer.image.clip_draw(int(jPlayer.frame) * 51, 0, 51, 48, jPlayer.x, jPlayer.y)
 
 
 class Foul:
@@ -195,7 +200,7 @@ class Foul:
 
     @staticmethod
     def draw(jPlayer):
-        jPlayer.image.clip_draw(int(jPlayer.frame) * 51.5, 0, 51.5, 48, jPlayer.x, jPlayer.y)
+        jPlayer.image.clip_draw(int(jPlayer.frame) * 51, 0, 51, 48, jPlayer.x, jPlayer.y)
         jPlayer.foul_message.draw(200, 300, "FOUL!!" + "\n" + "Press 'Space' to Restart", (255, 255, 0))
 
 
@@ -210,7 +215,7 @@ class StateMachine:
             Move: {space_down: CheckAngle, foul: Foul},
             CheckAngle: {foul: Foul, space_down: CheckPower},
             CheckPower: {foul: Foul, space_down: Stop},
-            Stop: {},
+            Stop: {end: Idle},
             Foul: {space_down: Idle}
         }
 
@@ -238,7 +243,7 @@ class JavelinPlayer:
     images = None
 
     def __init__(self):
-        self.x, self.y = 10, 380 # default : 10, 380
+        self.x, self.y = 30, 380 # default : 10, 380
         self.frame = 0
         self.image = load_image("./resources/javelin/player.png")
         self.frame_time = 0.0
@@ -249,6 +254,7 @@ class JavelinPlayer:
         self.angle_deg = 0
         self.powerbar = None
         self.powerbar_power = 0
+        self.score = []
 
     def update(self):
         self.state_machine.update()

@@ -2,4 +2,5 @@
 
 player = None
 hammer = None
+javelin = None
 background_h = None

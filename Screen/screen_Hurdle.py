@@ -45,19 +45,18 @@ def draw():
 
 
 def handle_events():
-    global isShowText
     for event in get_events():
         if event.type == SDL_QUIT:
             game_framework.quit()
         elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_ESCAPE):
-            game_framework.pop_mode()
+            game_framework.change_mode(Screen.menu_screen)
         else:
             player.handle_event(event)
 
 
 def pause():
-    pass
+    player.wait_time = 10000000000000000000000000000000.0
 
 
 def resume():
-    pass
+    player.wait_time = get_time()

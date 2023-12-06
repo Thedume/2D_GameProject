@@ -1,14 +1,16 @@
+import pickle
+import server
+
+from Class.background_javelin import FixedBackground as Background
 objects = [[] for _ in range(4)]
-
-# fill here
-collision_pairs = {} # { 'boy:ball' : [ [boy], [ball1, ball2, ball3...] ] }
+collision_pairs = {}
 
 
-def add_object(o, depth = 0):
+def add_object(o, depth=0):
     objects[depth].append(o)
 
 
-def add_objects(ol, depth = 0):
+def add_objects(ol, depth=0):
     objects[depth] += ol
 
 
@@ -24,7 +26,6 @@ def render():
             o.draw()
 
 
-# fill here
 def remove_collision_object(o):
     for pairs in collision_pairs.values():
         if o in pairs[0]:
@@ -36,45 +37,82 @@ def remove_collision_object(o):
 def remove_object(o):
     for layer in objects:
         if o in layer:
-            layer.remove(o)     # 시각적 월드에서만 지움
+            layer.remove(o)
             remove_collision_object(o)
-            del o   # 객체 자체를 완전히 메모리에서 제거
+            del o
             return
     raise ValueError('Cannot delete non existing object')
 
 
 def clear():
-    for layer in objects:
-        layer.clear()
+    global objects, collision_pairs
+
+    objects = [[] for _ in range(4)]
+    collision_pairs = {}
 
 
-# fill here
 def collide(a, b):
-    la, ba, ra, ta = a.get_bb()
-    lb, bb, rb, tb = b.get_bb()
+    left_a, bottom_a, right_a, top_a = a.get_bb()
+    left_b, bottom_b, right_b, top_b = b.get_bb()
 
-    if la > rb: return False
-    if ra < lb: return False
-    if ta < bb: return False
-    if ba > tb: return False
+    if left_a > right_b: return False
+    if right_a < left_b: return False
+    if top_a < bottom_b: return False
+    if bottom_a > top_b: return False
 
     return True
 
 
 def add_collision_pair(group, a, b):
     if group not in collision_pairs:
-        print(f'New group {group} added.')
+        print(f'Added new group {group}')
         collision_pairs[group] = [[], []]
-    if a:   # a가 있을때, 즉, a != None 일 경우..
+    if a:
         collision_pairs[group][0].append(a)
-    if b:   # b가 있을때, 즉, b != None 일 경우..
+    if b:
         collision_pairs[group][1].append(b)
 
 
-def handle_collisions(): # 등록된 모든 충돌 상황에 대해서 충돌 검사 및 충돌 처리 수행
-    for group, pairs in collision_pairs.items(): # key : 'boy:ball', value : [ [], [] ]
+def handle_collisions():
+    collided_pairs = []
+    for group, pairs in collision_pairs.items():
         for a in pairs[0]:
             for b in pairs[1]:
                 if collide(a, b):
-                    a.handle_collision(group, b)
-                    b.handle_collision(group, a)
+                    collided_pairs.append((group, a, b))
+    for group, a, b in collided_pairs:
+        a.handle_collision(group, b)
+        b.handle_collision(group, a)
+
+
+def all_objects():
+    # fill here
+    pass
+
+
+def save():
+    # fill here
+
+    group = [objects, collision_pairs]
+    with open('game.sav', 'wb') as f:
+        pickle.dump(group, f)
+
+    pass
+
+def load():
+    # fill here
+    # global objects, collision_pairs
+    #
+    # with open('game.sav', 'rb') as f:
+    #     group = pickle.load(f)
+    #
+    #     objects, collision_pairs = group[0], group[1]
+    #
+    # for layer in objects:
+    #     for o in layer:
+    #         if isinstance(o, Boy): # Boy라는 클래스로부터 만들어진 개체인지 확인
+    #             server.boy = o
+    #         elif isinstance(o, Background):
+    #             server.background = o
+
+    pass

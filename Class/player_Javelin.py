@@ -67,10 +67,6 @@ class Idle:
 
             jPlayer.chance = 3
 
-
-
-        pass
-
     @staticmethod
     def exit(jPlayer, e):
         pass
@@ -273,7 +269,7 @@ class GameEnd:
 class Foul:
     @staticmethod
     def enter(jPlayer, e):
-        print('Enter Foul')
+        # print('Enter Foul')
         jPlayer.frame = 0
         if jPlayer.state == 'FIRST':
             server.f_player_score['hurdle'][3 - jPlayer.chance] = 0

@@ -7,31 +7,15 @@ from pico2d import *
 class FixedBackground:
 
     def __init__(self):
-        self.image = load_image('./resources/hammer/1.png')
-        # fill here
-        self.cw = get_canvas_width()
-        self.ch = get_canvas_height()
-
-        self.w = self.image.w
-        self.h = self.image.h
+        self.image = load_image('./resources/Hurdle/hurdle_Background.png')
         pass
 
     def draw(self):
         # fill here
-        self.image.clip_draw_to_origin(self.window_left, self.window_bottom, self.cw, self.ch, 0, 0)
+        self.image.draw(400, 300)
         pass
 
     def update(self):
-        # fill here
-        if server.hammer is not None:
-            self.window_left = int(server.hammer.x) - self.cw // 2
-            self.window_bottom = int(server.hammer.y) - self.ch // 2
-        else:
-            self.window_left = int(server.player.x) - self.cw // 2
-            self.window_bottom = int(server.player.y) - self.ch // 2
-
-        self.window_left = clamp(0, self.window_left, self.w - self.cw - 1)
-        self.window_bottom = clamp(0, self.window_bottom, self.h - self.ch - 1)
         pass
 
     def handle_event(self, event):
@@ -47,8 +31,6 @@ class TileBackground:
         self.h = 600 * 3
 
         # fill here
-
-
 
     def update(self):
         pass

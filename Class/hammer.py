@@ -1,43 +1,51 @@
+import math
+
 from pico2d import *
+
+import game_world
+
+
+def calculate_position(angle, force, time, x, y):
+    # 초기 속도 계산
+    velocity_x = force * math.cos(math.radians(angle))
+    velocity_y = force * math.sin(math.radians(angle))
+
+    # 위치 계산
+    x = (velocity_x * time) * 0.005 + x
+    y = ((velocity_y * time) - (0.5 * 9.8 * time**2)) * 0.005 + y  # 중력 가속도 고려
+
+    return x, y
 
 
 class Hammer:
     def __init__(self, x, y, a, p):
         self.hammer_img = load_image('./resources/hammer/hammer.png')
+        self.oy = y
+        self.ry = y
         self.x, self.y = x, y
+        self.oangle = a
         self.angle, self.power = a, p
         self.isMove = False
+        self.time = 0
+        self.dt = 0.1
+        self.state = 'move'
+
+        # print(a, p)
 
     def update(self):
-            # # 초기 위치 설정
-            # current_x, current_y = self.x, self.y
-            #
-            # # 각도를 라디안으로 변환
-            # angle_rad = math.radians(self.angle)
-            #
-            # # 초기 속도 계산
-            # initial_velocity_x = self.power * math.cos(angle_rad)
-            # initial_velocity_y = self.power * math.sin(angle_rad)
-            #
-            # # 중력 가속도
-            # gravity = 9.8
-            #
-            # # 시뮬레이션 시간 간격
-            # time_step = 0.1
-            #
-            # # 시뮬레이션 진행
-            #
-            # # 현재 위치 업데이트
-            # current_x += initial_velocity_x * time_step
-            # current_y += initial_velocity_y * time_step - 0.5 * gravity * time_step ** 2
-            #
-            # # 현재 속도 업데이트
-            # initial_velocity_y -= gravity * time_step
-            #
-            # # 결과 반환
-
-
+        if self.ry >= self.oy and self.state == 'move':
+            self.x, self.ry = calculate_position(self.angle, self.power, self.time, self.x, self.y)
+            if 0 <= self.angle <= 15:
+                self.y = math.tan(math.radians(self.angle)) * self.x + self.y
+            elif 345 <= self.angle <= 359:
+                self.y = (-1) * math.tan(math.radians(360 - self.angle)) * self.x + self.y
+        else:
+            self.state = 'stop'
+        # print(self.x, self.y)
+        self.angle -= self.dt
+        self.time += self.dt
+        delay(0.025)
         pass
 
     def draw(self):
-        self.hammer_img.draw(self.x, self.y)
+        self.hammer_img.composite_draw(3.141592 / 180 * self.angle, '', self.x, self.y)

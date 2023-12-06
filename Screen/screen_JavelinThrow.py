@@ -9,8 +9,10 @@ from Class.background_javelin import FixedBackground as Background
 player_num = {1: 'first', 2: 'second'}
 
 def init():
-    server.f_player_score['hurdle'] = [None for i in range(3)]
-    server.s_player_score['hurdle'] = [None for i in range(3)]
+    server.game = 'hurdle'
+
+    server.f_player_score[server.game] = [None for i in range(3)]
+    server.s_player_score[server.game] = [None for i in range(3)]
 
     server.background_j = Background()
     game_world.add_object(server.background_j, 0)

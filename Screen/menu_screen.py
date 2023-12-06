@@ -60,7 +60,6 @@ def handle_events():
             if pow(75, 2) > (pow(400 - event.x, 2) + pow(150 - event.y, 2)):
                 print("In toHurdle Circle")
                 game_framework.change_mode(Screen.screen_Hurdle)
-                game_framework.push_mode(Screen.hurdleMenu_screen)
         elif event.type == SDL_MOUSEMOTION:
             if pow(75, 2) > (pow(200 - event.x, 2) + pow(450 - event.y, 2)):
                 circle.draw(200, 450)

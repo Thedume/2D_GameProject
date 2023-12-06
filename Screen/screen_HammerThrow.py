@@ -8,19 +8,25 @@ from Class.background_hammer import FixedBackground as Background
 
 
 def init():
-    global foul_message
-    #
-    foul_message = load_font("./resources/Giants-Inline.TTF", 65)
+    server.game = 'hammer'
 
-    server.background_h = Background()
-    game_world.add_object(server.background_h, 0)
+    server.f_player_score[server.game] = [None for i in range(3)]
+    server.s_player_score[server.game] = [None for i in range(3)]
+
+    server.background_hammer = Background()
+    game_world.add_object(server.background_hammer, 0)
 
     server.player = HammerPlayer()
     game_world.add_object(server.player, 1)
 
 
-
 def finish():
+    server.player = None
+    server.background_j = None
+    server.hammer = None
+    server.game = None
+    server.f_player_score = {'hurdle': [None], 'hammer': [None], 'javelin': [None]}
+    server.s_player_score = {'hurdle': [None], 'hammer': [None], 'javelin': [None]}
     game_world.clear()
     pass
 

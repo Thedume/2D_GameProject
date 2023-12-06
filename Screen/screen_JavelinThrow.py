@@ -4,22 +4,27 @@ import Screen.menu_screen
 import game_world
 import server
 from Class.player_Javelin import JavelinPlayer
-from Class.background_hammer import FixedBackground as Background
+from Class.background_javelin import FixedBackground as Background
 
+player_num = {1: 'first', 2: 'second'}
 
 def init():
-    global foul_message
-    #
-    foul_message = load_font("./resources/Giants-Inline.TTF", 65)
+    server.f_player_score['hurdle'] = [None for i in range(3)]
+    server.s_player_score['hurdle'] = [None for i in range(3)]
 
-    server.background_h = Background()
-    game_world.add_object(server.background_h, 0)
+    server.background_j = Background()
+    game_world.add_object(server.background_j, 0)
 
     server.player = JavelinPlayer()
     game_world.add_object(server.player, 1)
 
 
 def finish():
+    server.player = None
+    server.background_j = None
+    server.javelin = None
+    server.f_player_score = {'hurdle': [None], 'hammer': [None], 'javelin': [None]}
+    server.s_player_score = {'hurdle': [None], 'hammer': [None], 'javelin': [None]}
     game_world.clear()
     pass
 
@@ -34,6 +39,7 @@ def update():
 def draw():
     clear_canvas()
     # image.draw(400, 300)
+
     game_world.render()
     update_canvas()
     pass

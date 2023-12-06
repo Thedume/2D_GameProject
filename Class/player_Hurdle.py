@@ -117,6 +117,7 @@ class Jump:
         hurdlePlayer.wait_time = get_time()
         hurdlePlayer.isDown = False
         hurdlePlayer.dir_y = 1
+        hurdlePlayer.player_jump_sound.play()
 
     @staticmethod
     def exit(hurdlePlayer, e):
@@ -245,6 +246,8 @@ class StateMachine:
 
 
 class HurdlePlayer:
+    player_jump_sound = None
+
     def __init__(self):
         self.x, self.y = 120, 150
         self.frame = 0
@@ -258,6 +261,10 @@ class HurdlePlayer:
 
         server.hurdles = []
         self.x_position = 0
+
+        if not HurdlePlayer.player_jump_sound:
+            HurdlePlayer.player_jump_sound = load_wav('./resources/sound/jump.mp3')
+            HurdlePlayer.player_jump_sound.set_volume(32)
 
         self.state_machine = StateMachine(self)
         self.state_machine.start()
